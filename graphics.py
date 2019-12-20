@@ -6,8 +6,10 @@ import math
 
 class NodeGraphGraphicsScene(QGraphicsScene):
 
-    def __init__(self, parent=None):
+    def __init__(self, scene, parent=None):
         super(NodeGraphGraphicsScene, self).__init__(parent)
+
+        self.scene = scene
 
         self.grid_size = 17
         self.grid_square = 5

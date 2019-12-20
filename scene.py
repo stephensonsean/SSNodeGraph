@@ -13,7 +13,7 @@ class NodeGraphNodeScene(object):
         self.init_ui()
 
     def init_ui(self):
-        self.render_scene = NodeGraphGraphicsScene()
+        self.render_scene = NodeGraphGraphicsScene(self)
         self.render_scene.set_scene(self.width, self.height)
 
     def add_node(self, node):
