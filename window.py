@@ -5,6 +5,7 @@ from graphics import *
 from scene import *
 from node import *
 
+
 class NodeGraphWindow(QWidget):
 
     def __init__(self, parent=None):
@@ -27,7 +28,7 @@ class NodeGraphWindow(QWidget):
 
         self.scene = NodeGraphNodeScene()
 
-        node = SSNode(self.scene, "MultiplyDivide")
+        node = SSNode(self.scene, "MultiplyDivide", inputs=[1, 2], outputs=[1])
 
         self.view = NodeGraphGraphicsView(self.scene.render_scene, self)
 
@@ -36,10 +37,7 @@ class NodeGraphWindow(QWidget):
         self.setWindowTitle("S.S. Node Graph")
         self.show()
 
-        # self.add_content()
-
     def add_content(self):
-
         SSNode(self.scene, "ArmIk_L_md")
 
     def load_style_sheet(self, style_sheet_file=''):
@@ -47,7 +45,6 @@ class NodeGraphWindow(QWidget):
         file.open(QFile.ReadOnly | QFile.Text)
         style_sheet = file.readAll()
         QApplication.instance().setStyleSheet(str(style_sheet, encoding='utf-8'))
-
 
     def keyPressEvent(self, event:QKeyEvent):
         print(event.key())

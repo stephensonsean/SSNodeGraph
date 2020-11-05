@@ -1,5 +1,6 @@
 from graphics import *
 
+
 class NodeGraphNodeScene(object):
 
     def __init__(self):

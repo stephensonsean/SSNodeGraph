@@ -2,16 +2,17 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 
+from port import Port, PortPosition
+
 
 class SSNode(object):
 
-    def __init__(self, scene, name):
+    def __init__(self, scene, name, inputs=[], outputs=[]):
         """
 
         Args:
             scene (NodeGraphNodeScene):
             name (str):
-            type (str):
         """
         self.name = name
         self.scene = scene
@@ -26,10 +27,32 @@ class SSNode(object):
         self.input_plugs = []
         self.output_plugs = []
 
-    def populate_content(self):
+        self.port_spacing = 24
 
+        count = 0
+        for item in inputs:
+            port = Port(node=self, index=count)
+            self.input_plugs.append(port)
+            count += 1
+
+        count = 0
+        for item in outputs:
+            port = Port(node=self, index=count, position=PortPosition.RIGHT_BTM)
+            self.output_plugs.append(port)
+            count += 1
+
+    def populate_content(self):
         self.content.append( SSNodeContentRender( attribute_name='input1X', attribute_type='1.0'))
         self.content.append( SSNodeContentRender( attribute_name='active', attribute_type=True))
+
+    def port_pos(self, index, position):
+        x = 0 if position in [PortPosition.LEFT_TOP, PortPosition.LEFT_BTM] else self.render.width
+        if position in [PortPosition.LEFT_BTM, PortPosition.RIGHT_BTM]:
+            y = self.render.height - self.render.edge_size - self.render._padding - index * self.port_spacing
+        else:
+            y = self.render.title_height + self.render._padding + self.render.edge_size + index * self.port_spacing
+
+        return x, y
 
 
 class SSNodeRender(QGraphicsItem):
@@ -37,16 +60,16 @@ class SSNodeRender(QGraphicsItem):
         super().__init__(parent=parent)
 
         self._title_color = Qt.white
-        self._title_font = QFont("CaviarDreamsRegular", 13)
+        self._title_font = QFont("CaviarDreamsRegular", 12)
 
         self.width = 180
         self.height = 100
         self.edge_size = 10.0
-        self.title_height = 24.0
+        self.title_height = 29.0
         self._padding = 4.0
 
         self.content = node.content
-        self.content_height = 20
+        self.content_height = 27
         self.content_width = 162
         self.content_padding = 2.5
 
@@ -56,34 +79,26 @@ class SSNodeRender(QGraphicsItem):
         self._brush_title = QBrush(QColor(70,70,70))
         self._brush_background = QBrush(QColor(22,22,22))
 
-        self.initTitle()
+        self.init_title()
         self.title = title
 
         self.init_content()
 
-        self.initUI()
+        self.init_ui()
 
     def boundingRect(self):
-        return QRectF(
-            0,
-            0,
-            2 * self.edge_size + self.width,
-            2 * self.edge_size + self.height
-        ).normalized()
+        return QRectF(0, 0, self.width, self.height).normalized()
 
-    def initUI(self):
+    def init_ui(self):
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self.setFlag(QGraphicsItem.ItemIsMovable)
 
-    def initTitle(self):
+    def init_title(self):
         self.title_item = QGraphicsTextItem(self)
         self.title_item.setDefaultTextColor(self._title_color)
         self.title_item.setFont(self._title_font)
-        self.title_item.setPos(self._padding, 0)
-        self.title_item.setTextWidth(
-            self.width
-            - 2 * self._padding
-        )
+        self.title_item.setPos(self._padding, -4)
+        self.title_item.setTextWidth(self.width - 2 * self._padding)
 
     def init_content(self):
         height = self.content_padding+ self.title_height
@@ -147,6 +162,7 @@ class SSNodeContentRender(QWidget):
         self.layout = QHBoxLayout()
         self.widget = QWidget
         self.label = QLabel(self.attribute_name)
+        self.label.setFont(QFont('Ariel', 100))
 
         self.__set_widget_based_on_attr_type()
 
