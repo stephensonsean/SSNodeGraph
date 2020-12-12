@@ -128,6 +128,8 @@ class NodeGraphGraphicsView(QGraphicsView):
         return super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event:QWheelEvent):
+        print(event)
+
         zoom_out = 1 / self.zoom_factor
 
         old_position = self.mapToScene(event.pos())

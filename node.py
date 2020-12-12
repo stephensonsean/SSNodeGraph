@@ -37,22 +37,35 @@ class SSNode(object):
 
         count = 0
         for item in outputs:
-            port = Port(node=self, index=count, position=PortPosition.RIGHT_BTM)
+            port = Port(node=self, index=count,position=PortPosition.RIGHT_BTM)
             self.output_plugs.append(port)
             count += 1
 
     def populate_content(self):
-        self.content.append( SSNodeContentRender( attribute_name='input1X', attribute_type='1.0'))
-        self.content.append( SSNodeContentRender( attribute_name='active', attribute_type=True))
+        self.content.append(SSNodeContentRender(attribute_name='input1X',
+                                                attribute_type='1.0'))
+        self.content.append(SSNodeContentRender(attribute_name='active', attribute_type=True))
 
     def port_pos(self, index, position):
-        x = 0 if position in [PortPosition.LEFT_TOP, PortPosition.LEFT_BTM] else self.render.width
+        x = 0 if position in [PortPosition.LEFT_TOP,PortPosition.LEFT_BTM] else self.render.width
+
         if position in [PortPosition.LEFT_BTM, PortPosition.RIGHT_BTM]:
             y = self.render.height - self.render.edge_size - self.render._padding - index * self.port_spacing
         else:
             y = self.render.title_height + self.render._padding + self.render.edge_size + index * self.port_spacing
 
         return x, y
+
+    def set_pos(self, x, y):
+        self.render.setPos(x, y)
+
+    @property
+    def pos(self):
+        return self.render.pos()
+
+    @pos.setter
+    def pos(self, value):
+        self.render.setPos(*value)
 
 
 class SSNodeRender(QGraphicsItem):
@@ -76,8 +89,8 @@ class SSNodeRender(QGraphicsItem):
         self._pen_default = QPen(QColor("#7F000000"))
         self._pen_selected = QPen(QColor("#FFFFA637"))
 
-        self._brush_title = QBrush(QColor(70,70,70))
-        self._brush_background = QBrush(QColor(22,22,22))
+        self._brush_title = QBrush(QColor(70, 70, 70))
+        self._brush_background = QBrush(QColor(22, 22, 22))
 
         self.init_title()
         self.title = title
@@ -101,9 +114,8 @@ class SSNodeRender(QGraphicsItem):
         self.title_item.setTextWidth(self.width - 2 * self._padding)
 
     def init_content(self):
-        height = self.content_padding+ self.title_height
+        height = self.content_padding + self.title_height
         for item in self.content:
-
             self.render_content = QGraphicsProxyWidget(self)
             item.setGeometry(15,
                              height,
@@ -127,8 +139,7 @@ class SSNodeRender(QGraphicsItem):
         path_title.setFillRule(Qt.WindingFill)
         path_title.addRect(0, 0, self.width, self.title_height, )
         path_title.addRect(0, self.title_height - self.edge_size, self.edge_size, self.edge_size)
-        path_title.addRect(self.width - self.edge_size, self.title_height - self.edge_size, self.edge_size,
-                           self.edge_size)
+        path_title.addRect(self.width - self.edge_size, self.title_height - self.edge_size, self.edge_size, self.edge_size)
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._brush_title)
         painter.drawPath(path_title.simplified())
@@ -146,14 +157,16 @@ class SSNodeRender(QGraphicsItem):
         # outline
         path_outline = QPainterPath()
         path_outline.addRect(0, 0, self.width, self.height)
-        painter.setPen(self._pen_default if not self.isSelected() else self._pen_selected)
+        painter.setPen(
+            self._pen_default if not self.isSelected() else self._pen_selected)
         painter.setBrush(Qt.NoBrush)
         painter.drawPath(path_outline.simplified())
 
 
 class SSNodeContentRender(QWidget):
 
-    def __init__(self, parent=None, attribute_name='Attribute', attribute_type=None):
+    def __init__(self, parent=None, attribute_name='Attribute',
+                 attribute_type=None):
         super(SSNodeContentRender, self).__init__(parent=parent)
 
         self.attribute_type = attribute_type

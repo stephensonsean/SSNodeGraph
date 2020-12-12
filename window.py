@@ -29,6 +29,13 @@ class NodeGraphWindow(QWidget):
         self.scene = NodeGraphNodeScene()
 
         node = SSNode(self.scene, "MultiplyDivide", inputs=[1, 2], outputs=[1])
+        node.pos = (-374, 16)
+        node_b = SSNode(self.scene, "PlusMinusAverage", inputs=[1, 2, 3], outputs=[1, 2])
+        node_b.pos = (213, -105)
+        node_c = SSNode(self.scene, "FloorCeiling", inputs=[1], outputs=[1])
+        node_c.pos = (-115, -201)
+
+        self.nodes = [node, node_b, node_c]
 
         self.view = NodeGraphGraphicsView(self.scene.render_scene, self)
 
@@ -47,11 +54,13 @@ class NodeGraphWindow(QWidget):
         QApplication.instance().setStyleSheet(str(style_sheet, encoding='utf-8'))
 
     def keyPressEvent(self, event:QKeyEvent):
-        print(event.key())
         if event.key() == Qt.Key_D:
             self.add_content()
-            #rect = self.scene.render_scene.addRect(-100, -100, 80, 100, self.outline, self.magenta_brush)
+            # rect = self.scene.render_scene.addRect(-100, -100, 80, 100, self.outline, self.magenta_brush)
             # rect.setFlag(QGraphicsItem.ItemIsMovable)
         elif event.key() == Qt.Key_R:
             self.scene.render_scene.setSceneRect(-self.scene.width // 2, -self.scene.height // 2,
                                                  self.scene.width, self.scene.height)
+        elif event.key() == Qt.Key_O:
+            for node in self.nodes:
+                print('{} | {}'.format(node.name, node.pos))

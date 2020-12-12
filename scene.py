@@ -9,7 +9,7 @@ class NodeGraphNodeScene(object):
         self.height = 32000
 
         self.nodes = []
-        self.connectors = []
+        self.wires = []
 
         self.init_ui()
 
